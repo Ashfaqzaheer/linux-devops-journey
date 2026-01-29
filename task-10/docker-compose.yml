@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    deploy:
+      replicas: 3
+      

@@ -1,0 +1,23 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install 
+
+COPY . .
+
+EXPOSE 3000
+
+CMD [ "node", "index.js" ]
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY app.py .
+
+RUN pip install redis
+
+CMD [ "python", "app.py" ]

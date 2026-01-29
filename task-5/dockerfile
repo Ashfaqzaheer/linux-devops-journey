@@ -1,0 +1,35 @@
+# ---------- Build Stage ----------
+FROM eclipse-temurin:17-jdk-jammy AS builder
+
+# Set working directory for build
+WORKDIR /build
+
+# Copy Java source file
+COPY Main.java .
+
+# Compile Java source code
+RUN javac Main.java
+
+# Package compiled class into executable JAR
+RUN jar cfe app.jar Main Main.class
+
+# ---------- Runtime Stage ----------
+FROM eclipse-temurin:17-jre-jammy
+
+# Create a non-root user
+RUN useradd -m appuser
+
+# Set working directory
+WORKDIR /app
+
+# Copy only the JAR from build stage
+COPY --from=builder /build/app.jar app.jar
+
+# Change ownership to non-root user
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Run the Java application
+CMD ["java", "-jar", "app.jar"]
